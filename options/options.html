@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Multi Translator Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <h1>Multi Translator</h1>
+    <p class="subtitle">Translation provider settings</p>
+
+    <section>
+      <h2>LibreTranslate</h2>
+
+      <label for="endpoint">Server endpoint</label>
+      <input id="endpoint" type="url" placeholder="https://translate.example.com">
+      <p class="hint">Enter the base URL without <code>/translate</code>.</p>
+
+      <label for="apiKey">API key <span>optional</span></label>
+      <input id="apiKey" type="password" placeholder="API key">
+
+      <button id="testButton">Test connection</button>
+      <div id="testResult" role="status"></div>
+    </section>
+
+    <button id="saveButton">Save settings</button>
+    <div id="saveStatus" role="status"></div>
+  </main>
+  <script src="options.js"></script>
+</body>
+</html>
