@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Multi Translator</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Translate</h1>
+      <button id="settingsButton" title="Settings" aria-label="Settings">⚙</button>
+    </header>
+
+    <label for="provider">Provider</label>
+    <select id="provider">
+      <option value="google">Google Translate</option>
+      <option value="libretranslate">LibreTranslate</option>
+    </select>
+
+    <label for="targetLanguage">Translate to</label>
+    <select id="targetLanguage">
+      <option value="en">English</option>
+      <option value="sv">Swedish</option>
+      <option value="es">Spanish</option>
+      <option value="de">German</option>
+      <option value="fr">French</option>
+      <option value="it">Italian</option>
+      <option value="pt">Portuguese</option>
+    </select>
+
+    <section id="googleSection">
+      <p class="description">Google opens a translated version of the current webpage in a new tab.</p>
+      <button id="googleButton">Translate page with Google</button>
+    </section>
+
+    <section id="libretranslateSection" hidden>
+      <div class="section-title">Selected text</div>
+      <div id="selectedText" class="text-box muted">Select some text on this page.</div>
+      <button id="translateButton" disabled>Translate selection</button>
+    </section>
+
+    <section id="resultSection" hidden>
+      <div class="section-title">Translation</div>
+      <div id="translation" class="text-box"></div>
+    </section>
+
+    <div id="status" role="status"></div>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>
