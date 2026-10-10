@@ -14,31 +14,35 @@
     </header>
 
     <label for="provider">Provider</label>
-    <select id="provider">
-      <option value="google">Google Translate</option>
-      <option value="libretranslate">LibreTranslate</option>
-    </select>
+    <select id="provider"></select>
 
     <label for="targetLanguage">Translate to</label>
     <select id="targetLanguage">
       <option value="en">English</option>
       <option value="sv">Swedish</option>
-      <option value="es">Spanish</option>
+      <option value="da">Danish</option>
+      <option value="nb">Norwegian</option>
+      <option value="fi">Finnish</option>
       <option value="de">German</option>
       <option value="fr">French</option>
+      <option value="es">Spanish</option>
       <option value="it">Italian</option>
       <option value="pt">Portuguese</option>
+      <option value="nl">Dutch</option>
+      <option value="pl">Polish</option>
     </select>
 
-    <section id="googleSection">
-      <p class="description">Google opens a translated version of the current webpage in a new tab.</p>
-      <button id="googleButton">Translate page with Google</button>
-    </section>
+    <div id="setupNotice" class="notice" hidden>
+      <span id="setupText"></span>
+      <button id="setupButton" type="button" class="link">Open Settings</button>
+    </div>
 
-    <section id="libretranslateSection" hidden>
+    <button id="pageButton" class="primary">Translate this page</button>
+
+    <section id="selectionSection" hidden>
       <div class="section-title">Selected text</div>
-      <div id="selectedText" class="text-box muted">Select some text on this page.</div>
-      <button id="translateButton" disabled>Translate selection</button>
+      <div id="selectedText" class="text-box"></div>
+      <button id="translateButton" class="secondary">Translate selection</button>
     </section>
 
     <section id="resultSection" hidden>
@@ -47,7 +51,11 @@
     </section>
 
     <div id="status" role="status"></div>
+
+    <footer>
+      <button id="googleButton" type="button" class="link">Open in Google Translate instead</button>
+    </footer>
   </main>
-  <script src="popup.js"></script>
+  <script type="module" src="popup.js"></script>
 </body>
 </html>

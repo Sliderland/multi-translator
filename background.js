@@ -1,99 +1,48 @@
-const DEFAULT_SETTINGS = {
-  provider: "google",
-  targetLanguage: "en",
-  libretranslate: {
-    endpoint: "",
-    apiKey: ""
-  }
-};
+import { createProvider, loadSettings, normalizeSettings } from "./providers/index.js";
 
 chrome.runtime.onInstalled.addListener(async () => {
   const { settings } = await chrome.storage.local.get("settings");
-
-  if (!settings) {
-    await chrome.storage.local.set({ settings: DEFAULT_SETTINGS });
-  }
+  await chrome.storage.local.set({ settings: normalizeSettings(settings) });
 });
 
+const handlers = {
+  /**
+   * Translate an array of strings with the selected (or a named) provider.
+   * Used by the popup for selections and by the page translator for text nodes.
+   */
+  async TRANSLATE_TEXTS({ texts, source = "auto", target, provider }) {
+    if (!Array.isArray(texts) || texts.length === 0) {
+      throw new Error("There is no text to translate.");
+    }
+
+    const settings = await loadSettings();
+    const translator = createProvider(settings, provider ?? settings.provider);
+
+    const result = await translator.translateAll(texts, {
+      source,
+      target: target || settings.targetLanguage
+    });
+
+    return { ...result, provider: translator.constructor.id };
+  },
+
+  /** Check that a provider is reachable, using settings passed in (unsaved form values). */
+  async TEST_PROVIDER({ provider, config }) {
+    const settings = normalizeSettings({ [provider]: config });
+    return createProvider(settings, provider).testConnection();
+  }
+};
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type !== "TRANSLATE_SELECTION") {
+  const handler = handlers[message?.type];
+
+  if (!handler) {
     return undefined;
   }
 
-  translateSelection(message)
-    .then(sendResponse)
-    .catch((error) => {
-      sendResponse({
-        success: false,
-        error: error.message
-      });
-    });
+  handler(message)
+    .then((result) => sendResponse({ success: true, ...result }))
+    .catch((error) => sendResponse({ success: false, error: error.message }));
 
   return true;
 });
-
-async function getSettings() {
-  const { settings } = await chrome.storage.local.get("settings");
-
-  return {
-    ...DEFAULT_SETTINGS,
-    ...settings,
-    libretranslate: {
-      ...DEFAULT_SETTINGS.libretranslate,
-      ...settings?.libretranslate
-    }
-  };
-}
-
-async function translateSelection({ text, source = "auto", target }) {
-  const settings = await getSettings();
-
-  if (!text?.trim()) {
-    throw new Error("There is no selected text to translate.");
-  }
-
-  if (settings.provider !== "libretranslate") {
-    throw new Error("Select LibreTranslate to translate selected text.");
-  }
-
-  const endpoint = settings.libretranslate.endpoint.replace(/\/+$/, "");
-
-  if (!endpoint) {
-    throw new Error("Configure a LibreTranslate endpoint in Settings.");
-  }
-
-  const body = {
-    q: text,
-    source,
-    target: target || settings.targetLanguage,
-    format: "text"
-  };
-
-  if (settings.libretranslate.apiKey) {
-    body.api_key = settings.libretranslate.apiKey;
-  }
-
-  const response = await fetch(`${endpoint}/translate`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
-  });
-
-  if (!response.ok) {
-    throw new Error(`Translation server returned HTTP ${response.status}`);
-  }
-
-  const result = await response.json();
-
-  if (!result.translatedText) {
-    throw new Error("No translation was returned.");
-  }
-
-  return {
-    success: true,
-    translatedText: result.translatedText,
-    detectedLanguage: result.detectedLanguage?.language ?? null
-  };
-}
