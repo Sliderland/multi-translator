@@ -11,23 +11,37 @@
     <h1>Multi Translator</h1>
     <p class="subtitle">Translation provider settings</p>
 
-    <section>
+    <section data-provider="libretranslate">
       <h2>LibreTranslate</h2>
 
-      <label for="endpoint">Server endpoint</label>
-      <input id="endpoint" type="url" placeholder="https://translate.example.com">
+      <label for="libretranslate-endpoint">Server endpoint</label>
+      <input id="libretranslate-endpoint" data-field="endpoint" type="url" placeholder="https://translate.example.com">
       <p class="hint">Enter the base URL without <code>/translate</code>.</p>
 
-      <label for="apiKey">API key <span>optional</span></label>
-      <input id="apiKey" type="password" placeholder="API key">
+      <label for="libretranslate-apiKey">API key <span>optional</span></label>
+      <input id="libretranslate-apiKey" data-field="apiKey" type="password" placeholder="API key" autocomplete="off">
 
-      <button id="testButton">Test connection</button>
-      <div id="testResult" role="status"></div>
+      <button type="button" class="test">Test connection</button>
+      <div class="test-result" role="status"></div>
     </section>
 
-    <button id="saveButton">Save settings</button>
+    <section data-provider="deepl">
+      <h2>DeepL</h2>
+
+      <label for="deepl-apiKey">API key</label>
+      <input id="deepl-apiKey" data-field="apiKey" type="password" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx" autocomplete="off">
+      <p class="hint">
+        Get a key from your DeepL account under API Keys. Free-plan keys end in
+        <code>:fx</code>. The key is stored only in this browser and sent only to DeepL.
+      </p>
+
+      <button type="button" class="test">Test connection</button>
+      <div class="test-result" role="status"></div>
+    </section>
+
+    <button id="saveButton" type="button">Save settings</button>
     <div id="saveStatus" role="status"></div>
   </main>
-  <script src="options.js"></script>
+  <script type="module" src="options.js"></script>
 </body>
 </html>

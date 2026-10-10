@@ -1,55 +1,53 @@
 # Multi Translator
 
-A small Safari/Chrome WebExtension prototype for translating webpages and selected text.
+A Safari/Chrome WebExtension for translating webpages in place and translating selected text, with a choice of translation providers.
 
-## Current version
+## Features (0.2.0)
 
-Version `0.1.0` supports:
+- **In-place page translation.** Text on the current page is replaced with its translation, visible text first, with progress shown on the page. A badge on the page offers **Show original** to restore it. Content added later (infinite scroll, expanding sections) is translated as it appears.
+- **Selected-text translation** in the popup.
+- **Providers:** LibreTranslate (your own or a hosted server) and DeepL (bring your own API key; free-plan keys work).
+- **Google Translate fallback:** opens the page in Google's translation view in a new tab.
+- Settings stored locally in extension storage.
 
-- Google Translate page translation by redirecting to Google's website translation view.
-- Target-language selection for Google page translation.
-- Google Translate's interface language set to the selected target via `hl`.
-- LibreTranslate selected-text translation.
-- A configurable LibreTranslate endpoint and optional API key.
-- Persistent settings using extension storage.
-
-DeepL is intentionally not included yet. The planned implementation is a BYOK provider through a small proxy, but no working DeepL files had been created in this version of the project.
+Code, preformatted text, form fields, editable areas and anything marked `translate="no"` or `.notranslate` are left alone.
 
 ## Project structure
 
 ```text
 multi-translator/
 ├── manifest.json
-├── background.js
-├── content.js
-├── popup/
-│   ├── popup.html
-│   ├── popup.css
-│   └── popup.js
-├── options/
-│   ├── options.html
-│   ├── options.css
-│   └── options.js
+├── background.js              # routes translation requests to the selected provider
+├── content/
+│   └── page-translator.js     # in-place translation, injected on demand
+├── popup/                     # provider/language picker, page + selection actions
+├── options/                   # provider settings and connection tests
 └── providers/
-    └── libretranslate.js
+    ├── provider.js            # shared TranslationProvider base class + batching
+    ├── index.js               # provider registry and settings helpers
+    ├── libretranslate.js
+    └── deepl.js
 ```
+
+## Adding a provider
+
+1. Create `providers/<name>.js` with a class extending `TranslationProvider`. Set `static id` and `static label`, and implement `translate(texts, { source, target })` returning `{ translations, detectedLanguage }` plus `testConnection()`. Override `isConfigured`, `setupHint`, `maxBatchItems` and `maxBatchChars` as needed. See the comment at the top of `providers/provider.js`.
+2. Add the class to `PROVIDERS` and its default config to `DEFAULT_SETTINGS` in `providers/index.js`.
+3. Add a settings section to `options/options.html` with `data-provider="<id>"` and an input per config field (`data-field="<key>"`). The options script picks it up automatically.
+
+Batching, the popup menu and the background routing all come from the shared interface.
 
 ## Test in Chrome
 
-1. Open `chrome://extensions`.
-2. Enable **Developer mode**.
-3. Choose **Load unpacked**.
-4. Select this `multi-translator` folder.
-5. Open the extension's settings and enter a LibreTranslate endpoint if you want to test selected-text translation.
-
-Google page translation works without a LibreTranslate server.
+1. Open `chrome://extensions` and enable **Developer mode**.
+2. Choose **Load unpacked** and select this folder.
+3. Open the extension's settings, add a LibreTranslate server or DeepL key, and use **Test connection**.
 
 ## Test in Safari
 
-Use Safari's developer extension workflow to load the folder temporarily, or package it later with Apple's Safari WebExtension tooling. The WebExtension folder is the source of truth.
+Convert with Apple's tooling (`xcrun safari-web-extension-converter`) and run the generated Xcode project. The WebExtension folder stays the source of truth. The background script is a module service worker, which current Safari supports.
 
 ## Notes
 
-- The broad host permissions are convenient for this prototype because LibreTranslate endpoints may be local or hosted elsewhere. Tighten them before distributing the extension widely.
-- Google page translation opens a new tab; it does not translate the current page in place.
-- LibreTranslate selected-text translation requires an endpoint that permits requests from the extension origin.
+- Host permissions are broad because LibreTranslate servers can live anywhere. Tighten them (or move them to optional permissions requested per server) before distributing.
+- The DeepL key is stored in this browser's extension storage and sent only to DeepL's API.

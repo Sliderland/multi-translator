@@ -82,13 +82,52 @@ section {
   color: #888;
 }
 
-#googleButton,
-#translateButton {
+.primary,
+.secondary {
   width: 100%;
-  margin-top: 10px;
   padding: 10px;
+}
+
+.primary {
+  margin-top: 4px;
   background: #222;
   color: white;
+}
+
+.secondary {
+  margin-top: 10px;
+  background: #e8e8e8;
+  color: #222;
+}
+
+.link {
+  padding: 0;
+  background: none;
+  color: #2a5db0;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.notice {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fff4d6;
+  color: #5c4a12;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.notice .link {
+  display: block;
+  margin-top: 4px;
+}
+
+footer {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #e5e5e5;
+  text-align: center;
 }
 
 button:disabled {
@@ -100,4 +139,8 @@ button:disabled {
   margin-top: 12px;
   color: #666;
   font-size: 12px;
+}
+
+#status:empty {
+  display: none;
 }

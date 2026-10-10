@@ -66,7 +66,7 @@ button {
   cursor: pointer;
 }
 
-#testResult,
+.test-result,
 #saveStatus {
   margin-top: 10px;
   font-size: 13px;

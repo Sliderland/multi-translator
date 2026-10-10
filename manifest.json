@@ -1,20 +1,20 @@
 {
   "manifest_version": 3,
   "name": "Multi Translator",
-  "version": "0.1.0",
-  "description": "Translate webpages and selected text using Google Translate or LibreTranslate.",
+  "version": "0.2.0",
+  "description": "Translate webpages in place and selected text with LibreTranslate or DeepL.",
   "permissions": [
     "storage",
     "activeTab",
-    "scripting",
-    "tabs"
+    "scripting"
   ],
   "host_permissions": [
     "http://*/*",
     "https://*/*"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
     "default_title": "Translate",
